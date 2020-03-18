@@ -145,6 +145,7 @@ var neoInterops = []interopedFunction{
 	{Name: "Neo.Contract.GetStorageContext", Func: (*interopContext).contractGetStorageContext, Price: 1},
 	{Name: "Neo.Contract.IsPayable", Func: (*interopContext).contractIsPayable, Price: 1},
 	{Name: "Neo.Contract.Migrate", Func: (*interopContext).contractMigrate, Price: 0},
+	{Name: "Neo.Crypto.ECDsaVerify", Func: (*interopContext).ecdsaVerify, Price: 1},
 	{Name: "Neo.Enumerator.Concat", Func: (*interopContext).enumeratorConcat, Price: 1},
 	{Name: "Neo.Enumerator.Create", Func: (*interopContext).enumeratorCreate, Price: 1},
 	{Name: "Neo.Enumerator.Next", Func: (*interopContext).enumeratorNext, Price: 1},
