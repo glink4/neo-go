@@ -46,6 +46,7 @@ type Blockchainer interface {
 	GetTransaction(util.Uint256) (*transaction.Transaction, uint32, error)
 	GetUnspentCoinState(util.Uint256) *state.UnspentCoin
 	References(t *transaction.Transaction) ([]transaction.InOut, error)
+	RegisterNative(c *NativeContract)
 	mempool.Feer // fee interface
 	PoolTx(*transaction.Transaction) error
 	VerifyTx(*transaction.Transaction, *block.Block) error

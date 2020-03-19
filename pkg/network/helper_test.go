@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/nspcc-dev/neo-go/pkg/config"
+	"github.com/nspcc-dev/neo-go/pkg/core"
 	"github.com/nspcc-dev/neo-go/pkg/core/block"
 	"github.com/nspcc-dev/neo-go/pkg/core/mempool"
 	"github.com/nspcc-dev/neo-go/pkg/core/state"
@@ -36,6 +37,10 @@ func (chain testChain) CalculateClaimable(util.Fixed8, uint32, uint32) (util.Fix
 }
 
 func (chain testChain) References(t *transaction.Transaction) ([]transaction.InOut, error) {
+	panic("TODO")
+}
+
+func (chain testChain) RegisterNative(c *core.NativeContract) {
 	panic("TODO")
 }
 

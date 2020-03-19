@@ -844,3 +844,11 @@ func (ic *interopContext) iteratorKeys(v *vm.VM) error {
 func (ic *interopContext) iteratorValues(v *vm.VM) error {
 	return vm.IteratorValues(v)
 }
+
+// nativeDeploy deploys native contract.
+func (ic *interopContext) nativeDeploy(v *vm.VM) error {
+	if ic.block.Index != 0 {
+		return errors.New("native contracts can be deployed only at 0 block")
+	}
+	return nil
+}

@@ -121,6 +121,8 @@ type Blockchain struct {
 	log *zap.Logger
 
 	lastBatch *storage.MemBatch
+
+	contracts NativeContracts
 }
 
 type headersOpFunc func(headerList *HeaderHashList)
@@ -165,6 +167,8 @@ func NewBlockchain(s storage.Store, cfg config.ProtocolConfiguration, log *zap.L
 
 		generationAmount:  genAmount,
 		decrementInterval: decrementInterval,
+
+		contracts: *NewNativeContracts(),
 	}
 
 	if err := bc.init(); err != nil {
@@ -724,6 +728,13 @@ func (bc *Blockchain) storeBlock(block *block.Block) error {
 		bc.lastBatch = cache.dao.store.GetBatch()
 	}
 
+	for i := range bc.contracts.Contracts {
+		systemInterop := bc.newInteropContext(trigger.Application, cache.store, block, nil)
+		if err := bc.contracts.Contracts[i].OnPersist(systemInterop); err != nil {
+			return err
+		}
+	}
+
 	_, err := cache.Persist()
 	if err != nil {
 		return err
@@ -828,6 +839,11 @@ func (bc *Blockchain) GetNEP5Balances(acc util.Uint160) *state.NEP5Balances {
 // LastBatch returns last persisted storage batch.
 func (bc *Blockchain) LastBatch() *storage.MemBatch {
 	return bc.lastBatch
+}
+
+// RegisterNative registers native contract in the blockchain.
+func (bc *Blockchain) RegisterNative(c *NativeContract) {
+	bc.contracts.Add(c)
 }
 
 // processOutputs processes transaction outputs.
@@ -2003,6 +2019,9 @@ func (bc *Blockchain) GetScriptHashesForVerifying(t *transaction.Transaction) ([
 func (bc *Blockchain) spawnVMWithInterops(interopCtx *interopContext) *vm.VM {
 	vm := vm.New()
 	vm.SetScriptGetter(func(hash util.Uint160) ([]byte, bool) {
+		if c, ok := bc.contracts.byHash[hash]; ok {
+			return c.Script, (c.Manifest.Features&smartcontract.HasDynamicInvoke != 0)
+		}
 		cs, err := interopCtx.dao.GetContractState(hash)
 		if err != nil {
 			return nil, false
@@ -2012,6 +2031,7 @@ func (bc *Blockchain) spawnVMWithInterops(interopCtx *interopContext) *vm.VM {
 	})
 	vm.RegisterInteropGetter(interopCtx.getSystemInterop)
 	vm.RegisterInteropGetter(interopCtx.getNeoInterop)
+	vm.RegisterInteropGetter(bc.contracts.getNativeInterop(interopCtx))
 	return vm
 }
 

@@ -166,6 +166,7 @@ var neoInterops = []interopedFunction{
 	{Name: "Neo.Iterator.Key", Func: (*interopContext).iteratorKey, Price: 1},
 	{Name: "Neo.Iterator.Keys", Func: (*interopContext).iteratorKeys, Price: 1},
 	{Name: "Neo.Iterator.Values", Func: (*interopContext).iteratorValues, Price: 1},
+	{Name: "Neo.Native.Deploy", Func: (*interopContext).nativeDeploy, Price: 1},
 	{Name: "Neo.Output.GetAssetId", Func: (*interopContext).outputGetAssetID, Price: 1},
 	{Name: "Neo.Output.GetScriptHash", Func: (*interopContext).outputGetScriptHash, Price: 1},
 	{Name: "Neo.Output.GetValue", Func: (*interopContext).outputGetValue, Price: 1},
