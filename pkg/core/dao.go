@@ -141,6 +141,18 @@ func (dao *dao) DeleteContractState(hash util.Uint160) error {
 	return dao.store.Delete(key)
 }
 
+// GetNativeContractState retrieves native contract state from the store.
+func (dao *dao) GetNativeContractState(h util.Uint160) ([]byte, error) {
+	key := storage.AppendPrefix(storage.STNativeContract, h.BytesBE())
+	return dao.store.Get(key)
+}
+
+// PutNativeContractState puts native contract state into the store.
+func (dao *dao) PutNativeContractState(h util.Uint160, value []byte) error {
+	key := storage.AppendPrefix(storage.STNativeContract, h.BytesBE())
+	return dao.store.Put(key, value)
+}
+
 // -- end contracts.
 
 // -- start nep5 balances.

@@ -29,7 +29,7 @@ import (
 // Tuning parameters.
 const (
 	headerBatchCount = 2000
-	version          = "0.0.9"
+	version          = "0.0.10"
 
 	// This one comes from C# code and it's different from the constant used
 	// when creating an asset with Neo.Asset.Create interop call. It looks
@@ -195,6 +195,9 @@ func (bc *Blockchain) init() error {
 		if err != nil {
 			return err
 		}
+		if err := bc.initNative(); err != nil {
+			return err
+		}
 		return bc.storeBlock(genesisBlock)
 	}
 	if ver != version {
@@ -263,6 +266,27 @@ func (bc *Blockchain) init() error {
 			bc.headerList.Add(h.Hash())
 		}
 	}
+
+	return nil
+}
+
+func (bc *Blockchain) initNative() error {
+	ic := bc.newInteropContext(trigger.Application, bc.dao.store, nil, nil)
+
+	gas := newGasNative()
+	neo := newNeoNative()
+	neo.gas = gas
+	gas.neo = neo
+
+	if err := gas.Initialize(ic); err != nil {
+		return fmt.Errorf("can't initialize GAS native contract: %v", err)
+	}
+	if err := neo.Initialize(ic); err != nil {
+		return fmt.Errorf("can't initialize NEO native contract: %v", err)
+	}
+
+	bc.RegisterNative(gas.toNativeContract())
+	bc.RegisterNative(neo.toNativeContract())
 
 	return nil
 }
